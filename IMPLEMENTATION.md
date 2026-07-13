@@ -72,15 +72,19 @@ palette colour is actually applied, which caught the dead key.
 
 ## Registered apps
 
-| App | Port | URL file |
-|---|---|---|
-| 📚 KI-WissensWiki | 8520 | `/tmp/wiki-app-url.txt` |
-| 🔎 KI-Zusammenfassung | 8530 | `/tmp/summarizer-app-url.txt` |
+| App | Port | Public URL | Layout |
+|---|---|---|---|
+| 🧠 BrAIn | 8511 | `https://ai.brenk.com/` (permanent) | featured, full width |
+| 📚 KI-WissensWiki | 8520 | `/tmp/wiki-app-url.txt` (rotates) | grid |
+| 🔎 KI-Zusammenfassung | 8530 | `/tmp/summarizer-app-url.txt` (rotates) | grid |
+
+`featured = true` lifts an app out of the grid into a full-width card above the
+divider. The split is data-driven; `app.py` names no app.
 
 ## Tests
 
-46 tests, fully offline, under the PRD's 50 cap. `uv run pytest`.
-Map: [docs/testing.md](docs/testing.md).
+50 tests, fully offline — **at** the PRD's 50 cap. Adding a test now means
+merging or dropping one. `uv run pytest`. Map: [docs/testing.md](docs/testing.md).
 
 ## Run
 

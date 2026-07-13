@@ -17,7 +17,7 @@ CFG = load_config()
 COLUMNS = 2
 
 TITLE = "KI-Anwendungen"
-SUBTITLE = "Lokale KI-Werkzeuge auf diesem Server — wählen Sie eine Anwendung."
+SUBTITLE = "Lokale BRENK-KI-Werkzeuge auf internem Server — wählen Sie eine Anwendung."
 ONLINE = "🟢 Online"
 ONLINE_LOCAL = "🟢 Online — nur im lokalen Netzwerk erreichbar"
 OFFLINE = "⚪ Offline — Dienst läuft nicht"
@@ -64,7 +64,6 @@ def main() -> None:
 
     st.title(TITLE)
     st.caption(SUBTITLE)
-    st.markdown("---")
 
     try:
         apps = load_apps(CFG.apps_file)
@@ -73,11 +72,21 @@ def main() -> None:
         st.stop()
 
     if not apps:
+        st.markdown("---")
         st.info(EMPTY)
         return
 
-    _grid(apps)
+    # Featured apps get a full-width card of their own, above the grid.
+    featured = [a for a in apps if a.featured]
+    for app in featured:
+        st.markdown("---")
+        _card(app)
+
     st.markdown("---")
+    rest = [a for a in apps if not a.featured]
+    if rest:
+        _grid(rest)
+        st.markdown("---")
     # Status is probed per page load; this just forces a fresh one.
     if st.button(REFRESH, key="refresh_btn"):
         st.rerun()

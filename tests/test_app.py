@@ -107,6 +107,19 @@ def test_an_empty_registry_explains_itself(registry):
     assert not _links(at)
 
 
+def test_featured_app_is_rendered_first(registry, open_port, closed_port):
+    # The featured card sits above the grid, so it must come first in the tree —
+    # even though it is declared last in the registry.
+    registry.write_text(
+        f'[[apps]]\nname="Grid"\nhint="h"\nicon="📚"\nport={closed_port}\n'
+        f'[[apps]]\nname="Featured"\nhint="h"\nicon="🧠"\nport={open_port}\n'
+        f'url="https://brain.example.com/"\nfeatured=true\n',
+        encoding="utf-8",
+    )
+    at = AppTest.from_file(APP_FILE).run()
+    assert _links(at)[0].url == "https://brain.example.com/"
+
+
 def test_refresh_reruns_without_error(at):
     at.button[0].click().run()
     assert not at.exception

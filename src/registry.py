@@ -21,6 +21,7 @@ class App:
     port: int
     url: str | None = None
     url_file: Path | None = None
+    featured: bool = False  # full-width card above the grid
 
 
 def _build(entry: dict, index: int) -> App:
@@ -30,13 +31,17 @@ def _build(entry: dict, index: int) -> App:
     if missing:
         raise RegistryError(f"{where} is missing required field(s): {', '.join(missing)}")
 
-    unknown = set(entry) - set(REQUIRED) - {"url", "url_file"}
+    unknown = set(entry) - set(REQUIRED) - {"url", "url_file", "featured"}
     if unknown:
         raise RegistryError(f"{where} ({entry['name']}) has unknown field(s): {', '.join(sorted(unknown))}")
 
     port = entry["port"]
     if not isinstance(port, int) or not 1 <= port <= 65535:
         raise RegistryError(f"{where} ({entry['name']}) has an invalid port: {port!r}")
+
+    featured = entry.get("featured", False)
+    if not isinstance(featured, bool):
+        raise RegistryError(f"{where} ({entry['name']}): featured must be true or false")
 
     url_file = entry.get("url_file")
     return App(
@@ -46,6 +51,7 @@ def _build(entry: dict, index: int) -> App:
         port=port,
         url=entry.get("url"),
         url_file=Path(url_file) if url_file else None,
+        featured=featured,
     )
 
 

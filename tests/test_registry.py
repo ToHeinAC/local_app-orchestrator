@@ -84,4 +84,15 @@ def test_missing_file_is_rejected(tmp_path):
 def test_the_shipped_registry_is_valid():
     # The real apps.toml must parse — a broken one breaks the whole page.
     apps = load_apps(ROOT / "apps.toml")
-    assert {a.port for a in apps} == {8520, 8530}
+    assert {a.port for a in apps} == {8511, 8520, 8530}
+    assert [a.name for a in apps if a.featured] == ["BrAIn"]
+
+
+def test_featured_defaults_to_false(apps_file):
+    assert not any(a.featured for a in load_apps(apps_file))
+
+
+def test_featured_must_be_a_boolean(tmp_path):
+    body = '[[apps]]\nname="W"\nhint="h"\nicon="📚"\nport=8520\nfeatured="yes"\n'
+    with pytest.raises(RegistryError, match="featured must be"):
+        load_apps(_write(tmp_path, body))

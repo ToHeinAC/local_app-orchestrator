@@ -15,6 +15,7 @@ One `[[apps]]` block per app.
 | `port` | yes | Port the app listens on, on this server. 1–65535, unique across the registry. |
 | `url` | no | Static public URL (e.g. a tunnel). |
 | `url_file` | no | File holding the app's *current* public URL. Wins over `url`. |
+| `featured` | no | `true` → a full-width card above the divider, ahead of the grid. Default `false`. For the entry point people should land on. |
 
 Unknown fields are rejected, so a typo like `urlfile =` fails loudly instead of
 being silently ignored.
@@ -50,6 +51,9 @@ writes its current URL to a file:
 |---|---|
 | KI-WissensWiki (8520) | `/tmp/wiki-app-url.txt` |
 | KI-Zusammenfassung (8530) | `/tmp/summarizer-app-url.txt` |
+
+BrAIn (8511) is the exception: it has a **permanent** URL on a real domain
+(`https://ai.brenk.com/`), so it needs no `url_file` and cannot go stale.
 
 Naming the *file* in the registry means the orchestrator reads whatever is
 current at page load. Restart an app's tunnel, refresh the page, the link is

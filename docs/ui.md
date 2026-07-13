@@ -53,9 +53,24 @@ shell from the TOML before Python runs. **Keep the two in sync.**
 
 ## Layout
 
-`layout="wide"`, sidebar collapsed (there is nothing in it). Title, subtitle
-caption, divider, then a **two-column grid of cards** (`COLUMNS` in `app.py`),
-one per registered app, each an `st.container(border=True)`:
+`layout="wide"`, sidebar collapsed (there is nothing in it):
+
+```
+KI-Anwendungen                      <- title
+Lokale BRENK-KI-Werkzeuge …         <- subtitle caption
+--------------------------------
+[ 🧠 BrAIn — full-width card    ]   <- featured apps (registry: featured = true)
+--------------------------------
+[ 📚 Wiki      ] [ 🔎 Summary   ]   <- two-column grid, the rest
+--------------------------------
+[ Status aktualisieren ]
+```
+
+Apps flagged `featured` in the registry get a **full-width card above the
+divider**; everything else falls into a **two-column grid** (`COLUMNS` in
+`app.py`). The split is data-driven — `app.py` names no app.
+
+Each card is an `st.container(border=True)`:
 
 ```
 ### 📚 KI-WissensWiki          <- icon + name

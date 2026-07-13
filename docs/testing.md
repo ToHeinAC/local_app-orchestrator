@@ -1,11 +1,11 @@
 # Testing
 
 ```bash
-uv run pytest        # 46 tests, ~1 s, fully offline
+uv run pytest        # 50 tests, ~1 s, fully offline
 ```
 
-The PRD caps the suite at **50 tests**. At 46 there is little headroom: prefer
-merging or replacing a test over adding one.
+The PRD caps the suite at **50 tests** and the suite is now **at** the cap.
+Adding a test means merging or dropping one — parametrize rather than append.
 
 Fully offline in a strong sense — no tunnel, no Cloudflare, and no dependency on
 any real app running. Tests that need a live port bind an **ephemeral** one
@@ -16,10 +16,10 @@ being up on the developer's machine.
 
 | File | Tests | Covers |
 |---|---|---|
-| `test_registry.py` | 15 | `apps.toml` parsing: every field, `url_file` → `Path`, empty registry, and the rejections — missing required field (parametrized ×4), invalid port (parametrized ×3), duplicate ports, unknown field, malformed TOML, missing file. Plus: **the shipped `apps.toml` parses**. |
+| `test_registry.py` | 17 | `apps.toml` parsing: every field, `url_file` → `Path`, `featured` (default, non-boolean rejected), empty registry, and the rejections — missing required field (parametrized ×4), invalid port (parametrized ×3), duplicate ports, unknown field, malformed TOML, missing file. Plus: **the shipped `apps.toml` parses**. |
+| `test_app.py` | 12 | The page through `streamlit.testing.v1.AppTest`, incl. the featured card rendering ahead of the grid. |
 | `test_status.py` | 10 | URL precedence (`url_file` > `url` > `host:port`), the `APP_HOST` fallback, and the three ways a `url_file` is ignored (missing, empty, garbage). Liveness against a real open/closed port. |
-| `test_app.py` | 11 | The page through `streamlit.testing.v1.AppTest`. |
-| `test_theme.py` | 7 | `<style>` block shape, every palette colour applied, both fonts imported, the Material-icon ligature guard, white primary label, `pointer-events: none` on a disabled button, custom palette override. |
+| `test_theme.py` | 8 | `<style>` block shape, every palette colour applied, both fonts imported, the Material-icon ligature guard, white primary label, `pointer-events: none` on a disabled button, equal card heights, custom palette override. |
 | `test_config.py` | 3 | Defaults, env overrides, and that the default registry path is absolute (Streamlit's cwd is not guaranteed). |
 
 ## Fixtures (`conftest.py`)

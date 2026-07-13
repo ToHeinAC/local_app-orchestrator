@@ -13,8 +13,18 @@
 #   url_file  (optional) file holding the current public URL. Wins over `url`.
 #             Quick-tunnel URLs rotate on every restart; tunnel.sh writes the
 #             fresh one here, so reading the file keeps links from going stale.
+#   featured  (optional) true = full-width card above the divider, ahead of the
+#             two-column grid. For the entry point you want people to land on.
 #
 # Resolution order for the Open button: url_file -> url -> http://<host>:<port>
+
+[[apps]]
+name     = "BrAIn"
+hint     = "Brenk AI network - Tiefe Recherche"
+icon     = "🧠"
+port     = 8511
+url      = "https://ai.brenk.com/"
+featured = true
 
 [[apps]]
 name     = "KI-WissensWiki"
