@@ -7,23 +7,29 @@
 #   hint      (required) one-line description under the name
 #   icon      (required) emoji shown left of the name
 #   port      (required) port the app listens on, on this server
-#   url       (optional) public URL, e.g. a Cloudflare tunnel. Needed for access
-#             from outside this machine: a link to localhost:<port> is resolved
-#             by the *visitor's* browser and would not reach this server.
+#   url       (optional) public URL. Needed for access from outside this machine:
+#             a link to localhost:<port> is resolved by the *visitor's* browser
+#             and would not reach this server.
 #   url_file  (optional) file holding the current public URL. Wins over `url`.
-#             Quick-tunnel URLs rotate on every restart; tunnel.sh writes the
-#             fresh one here, so reading the file keeps links from going stale.
+#             For an app behind a rotating Cloudflare quick tunnel, whose
+#             tunnel.sh writes the fresh URL here. Apps served by the nginx
+#             reverse proxy have a permanent `url` and need no url_file.
 #   featured  (optional) true = full-width card above the divider, ahead of the
 #             two-column grid. For the entry point you want people to land on.
 #
 # Resolution order for the Open button: url_file -> url -> http://<host>:<port>
+#
+# The URLs below are served by the nginx reverse proxy on ai.brenk.com, one path
+# per app — permanent, so no url_file is needed. See docs/reverse-proxy.md.
+# The trailing slash matters: it is what makes Streamlit's relative ./static/
+# links resolve inside the app's own path instead of at the site root.
 
 [[apps]]
 name     = "BrAIn"
 hint     = "Brenk AI network - Tiefe Recherche"
 icon     = "🧠"
 port     = 8511
-url      = "https://annotation-neighbor-karma-burst.trycloudflare.com/"
+url      = "https://ai.brenk.com/brain/"
 featured = true
 
 [[apps]]
@@ -31,23 +37,22 @@ name     = "KI-WissensWiki"
 hint     = "Lokales KI-Wissensmanagement zur gemeinsamen und/oder individuellen Wissensoptimierung und Recherche"
 icon     = "📚"
 port     = 8520
-url      = "https://meter-benchmark-bond-draw.trycloudflare.com"
-url_file = "/tmp/wiki-app-url.txt"
+url      = "https://ai.brenk.com/wiwi/"
 
 [[apps]]
 name     = "KI-Zusammenfassung"
 hint     = "Lokales KI-Zusammenfassungstool zur Ressourcenoptimierung"
 icon     = "🔎"
 port     = 8530
-url      = "https://geography-insulation-archived-larger.trycloudflare.com"
-url_file = "/tmp/summarizer-app-url.txt"
+url      = "https://ai.brenk.com/smrz/"
 
-# Template — copy, uncomment, fill in:
+# Template — copy, uncomment, fill in. Give the app a path in the nginx config
+# and set the app's own baseUrlPath to match (docs/reverse-proxy.md); the two
+# must always agree.
 #
 # [[apps]]
 # name     = "Neue App"
 # hint     = "kurze Beschreibung"
 # icon     = "🚀"
 # port     = 8540
-# url      = "https://example.trycloudflare.com/"
-# url_file = "/tmp/neue-app-url.txt"
+# url      = "https://ai.brenk.com/neu/"

@@ -19,7 +19,8 @@ uv run pytest                                        # 46 tests, fully offline
 Start with [IMPLEMENTATION.md](IMPLEMENTATION.md) @IMPLEMENTATION.md — current state, module map, key decisions. Deep detail per component:
 
 - [docs/architecture.md](docs/architecture.md) @docs/architecture.md — layers, data flow, why routing works the way it does
-- [docs/registry.md](docs/registry.md) @docs/registry.md — `apps.toml` schema, adding an app, URL resolution and the tunnel problem
+- [docs/registry.md](docs/registry.md) @docs/registry.md — `apps.toml` schema, adding an app, URL resolution
+- [docs/reverse-proxy.md](docs/reverse-proxy.md) @docs/reverse-proxy.md — the nginx proxy behind the apps' permanent URLs, `baseUrlPath`, and why the trailing slash matters
 - [docs/ui.md](docs/ui.md) @docs/ui.md — Forest palette, CSS injection, card layout, the no-exit-button decision
 - [docs/testing.md](docs/testing.md) @docs/testing.md — test map and fixtures
 

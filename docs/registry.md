@@ -13,8 +13,8 @@ One `[[apps]]` block per app.
 | `hint` | yes | One-line description under the name. |
 | `icon` | yes | Emoji left of the name. |
 | `port` | yes | Port the app listens on, on this server. 1–65535, unique across the registry. |
-| `url` | no | Static public URL (e.g. a tunnel). |
-| `url_file` | no | File holding the app's *current* public URL. Wins over `url`. |
+| `url` | no | Public URL. For an app behind the nginx proxy: `https://ai.brenk.com/<path>/`, trailing slash included. |
+| `url_file` | no | File holding the app's *current* public URL. Wins over `url`. For an app on a rotating quick tunnel instead of the proxy. |
 | `featured` | no | `true` → a full-width card above the divider, ahead of the grid. Default `false`. For the entry point people should land on. |
 
 Unknown fields are rejected, so a typo like `urlfile =` fails loudly instead of
@@ -28,41 +28,60 @@ name     = "Neue App"
 hint     = "kurze Beschreibung"
 icon     = "🚀"
 port     = 8540
-url_file = "/tmp/neue-app-url.txt"
+url      = "https://ai.brenk.com/neu/"
 ```
 
-That is all. Restart is not needed — the registry is read on every page load; the
-Refresh button re-reads it.
+That is all *here*. Restart is not needed — the registry is read on every page
+load; the Refresh button re-reads it. The app's public URL itself has two more
+sides to it (an nginx path, a matching `baseUrlPath`) — see
+[reverse-proxy.md](reverse-proxy.md#adding-an-app).
 
-## URL resolution, and why `url_file` exists
+## URL resolution
 
 Resolution order: **`url_file` → `url` → `http://<APP_HOST>:<port>`**.
 
 A link is resolved by the browser that clicks it. `http://localhost:8530` works
 only from this server or its LAN. To reach an app from outside, that app needs
-its own public URL — the orchestrator's own tunnel carries port 8550 and nothing
-else.
+its own public URL.
+
+Every registered app now has a **permanent** one, served by the nginx reverse
+proxy at one path per app:
+
+| App | Public URL |
+|---|---|
+| BrAIn (8511) | `https://ai.brenk.com/brain/` |
+| KI-WissensWiki (8520) | `https://ai.brenk.com/wiwi/` |
+| KI-Zusammenfassung (8530) | `https://ai.brenk.com/smrz/` |
+
+The **trailing slash is required**, not cosmetic: Streamlit's asset links are
+relative, and without the slash they resolve at the site root and the app renders
+blank. [reverse-proxy.md](reverse-proxy.md) explains the mechanics.
+
+### `url_file`, and when you still want it
 
 Cloudflare **quick-tunnel URLs rotate on every tunnel restart**, so a URL pasted
-into `url` goes stale and becomes a dead link. Each app's `tunnel.sh` already
-writes its current URL to a file:
+into `url` goes stale and becomes a dead link. An app on a quick tunnel therefore
+names the *file* its `tunnel.sh` writes the current URL to, and the orchestrator
+reads it at page load: restart the tunnel, refresh the page, the link is fresh.
 
-| App | URL file |
-|---|---|
-| KI-WissensWiki (8520) | `/tmp/wiki-app-url.txt` |
-| KI-Zusammenfassung (8530) | `/tmp/summarizer-app-url.txt` |
-
-BrAIn (8511) is the exception: it has a **permanent** URL on a real domain
-(`https://ai.brenk.com/`), so it needs no `url_file` and cannot go stale.
-
-Naming the *file* in the registry means the orchestrator reads whatever is
-current at page load. Restart an app's tunnel, refresh the page, the link is
-fresh. Keep `url` as well if you like — it is the fallback when the tunnel (and
-its file) is down.
+No app uses this today — they are all behind the proxy. The mechanism stays for
+an app that is not (yet) in the nginx config. Keep `url` as well if you like — it
+is the fallback when the tunnel, and its file, is down.
 
 A `url_file` that is missing, empty, or does not start with `http://`/`https://`
 is ignored rather than treated as an error: a down tunnel is normal, and linking
 the browser at a log line would be worse than falling back.
+
+### The fallback URL
+
+The last resort, `http://<APP_HOST>:<port>`, is **wrong for an app that has a
+`baseUrlPath`** — that app answers 404 at its port's root and lives at
+`http://<host>:<port>/<path>/` instead. The orchestrator does not know about
+`baseUrlPath`, and deliberately so: every registered app has a permanent `url`,
+so the fallback never fires for one. It only appears for an app registered
+without any public URL, which by definition has no proxy path either. If that
+changes, the honest fix is a `base_path` field in the registry — not guessing in
+`status.resolve()`.
 
 ## Status
 

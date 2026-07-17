@@ -39,29 +39,36 @@ browser there.
 
 The consequence to understand: **a link is resolved by the browser that clicks
 it.** `http://localhost:8530` reaches the summarizer only if the browser runs on
-this server (or on the LAN, via `APP_HOST`). A visitor coming through the
-orchestrator's Cloudflare tunnel who clicks a localhost link hits *their own*
-port 8530.
+this server (or on the LAN, via `APP_HOST`). A remote visitor who clicks a
+localhost link hits *their own* port 8530. So an app that should be reachable
+from outside needs a public URL of its own, and the orchestrator needs to know it
+— hence `url` / `url_file` in the registry.
 
-A Cloudflare quick tunnel maps **one public URL to one local port**. The
-orchestrator's tunnel carries 8550 and nothing else. So for an app to be
-reachable from outside, that app needs its **own** tunnel, and the orchestrator
-needs to know its URL — hence `url` / `url_file` in the registry.
+**Something else does proxy — just not this app.** An nginx reverse proxy on
+`ai.brenk.com` terminates SSL and maps one path per app onto its port
+(`/wiwi/` → `:8520`), which is where the permanent URLs in `apps.toml` come from.
+That proxy is a separate machine and a separate concern; the orchestrator neither
+knows nor cares, it just links to the URLs it is given. The boundary in
+[AGENTS.md](../AGENTS.md) §5.4 is about what *this app* does, and it still only
+links. Mechanics: [reverse-proxy.md](reverse-proxy.md).
+
+The proxy is what replaced per-app Cloudflare quick tunnels, whose URLs rotate on
+every restart — the reason `url_file` exists.
 
 Alternatives considered and rejected:
 
-- **Reverse proxy** (`/app/wiki` → `:8520`, one tunnel for everything). Correct
-  in principle, but Streamlit is a WebSocket app: it needs an HTTP+WS relay in
-  front, every app relaunched with a matching `--server.baseUrlPath`, and it
-  brings XSRF/static-asset breakage. Too much machinery for a directory page.
+- **Proxying inside the orchestrator** (Streamlit relaying HTTP+WS for the apps
+  it lists). This is what §5.4 forbids, and nginx does the job properly one layer
+  up: it is built for it, it already terminates SSL for the domain, and it does
+  not put a Python page in the data path of every app.
 - **iframe embedding.** Same localhost problem, unfixable — the iframe URL is
   resolved by the visitor's browser too — plus it needs CORS/XSRF disabled on
   every embedded app.
-- **A named Cloudflare tunnel** with hostname→port ingress rules. This is the
-  *right* long-term answer: one tunnel, permanent URLs, no `/tmp` files. It needs
-  a domain in Cloudflare DNS, which this setup does not have. (`~/.cloudflared/config.yml`
-  currently lists `*.trycloudflare.com` hostnames, which cannot work for a named
-  tunnel.) If a domain appears, drop `url_file` and hard-code the hostnames.
+- **A named Cloudflare tunnel** with hostname→port ingress rules. Moot: nginx on
+  a real domain now provides the permanent URLs this would have bought.
+- **Subdomain per app** (`wiwi.brenk.com`) instead of subpaths. No `baseUrlPath`,
+  no trailing-slash trap — but a DNS record per app and a certificate covering
+  the names. Reconsider if `brenk.com` has a wildcard certificate.
 
 ## Configuration
 

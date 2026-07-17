@@ -23,6 +23,7 @@ rather than a missing feature.
 | `src/config.py` | Scalars from the environment (python-dotenv) into a frozen `Config`. |
 | `src/theme.py` | Forest palette + `build_css()`, ported from `local_summarizer`. |
 | `apps.toml` | The app registry. Adding an app = five lines here, no code change. |
+| `deploy/ai.brenk.com.conf` | nginx config for the reverse proxy that gives the apps their permanent URLs. Not code — a file to install on another machine. |
 
 Data flow, once per page load:
 
@@ -45,15 +46,24 @@ apps.toml --registry.load_apps--> [App]
 environment variables. `apps.toml` gives comments, a copy-paste template, and
 validation. See [docs/registry.md](docs/registry.md).
 
-**URL files beat static URLs.** Cloudflare quick-tunnel URLs rotate on every
-restart. Each app's `tunnel.sh` writes its current URL to a file, so the registry
-names the *file*; the orchestrator reads it at page load and the link is never
-stale. Resolution order: `url_file` → `url` → `http://<host>:<port>`.
+**Permanent URLs from an nginx path per app.** A reverse proxy on `ai.brenk.com`
+maps `/wiwi/` → `:8520` and so on, so every app has a stable public URL in `url`.
+This replaced per-app Cloudflare quick tunnels, whose URLs rotate on every
+restart. It does not cross the no-proxy boundary: nginx proxies, on another
+machine; the orchestrator still only links. The catch is that both sides must
+agree — an nginx path needs a matching `baseUrlPath` in that app, or it renders
+blank. [docs/reverse-proxy.md](docs/reverse-proxy.md).
+
+**`url_file` stays, unused.** It reads an app's current URL from a file at page
+load, which is how a rotating quick tunnel is kept from going stale. No app needs
+it now; it remains for one that is not in the nginx config. Resolution order:
+`url_file` → `url` → `http://<host>:<port>`.
 
 **Local-only links are labelled as such.** An app with no public URL falls back
 to `http://<host>:<port>`, which only works from this server or its LAN — a link
 resolved by a remote visitor's browser would hit *their* machine. The card says
-so rather than handing over a link that silently hangs.
+so rather than handing over a link that silently hangs. No registered app hits
+this path today ([why that matters for `baseUrlPath`](docs/registry.md#the-fallback-url)).
 
 **No exit button**, overriding the global Streamlit rule. The orchestrator kills
 no process, its own included; stopping it would also drop its tunnel via
@@ -72,11 +82,14 @@ palette colour is actually applied, which caught the dead key.
 
 ## Registered apps
 
-| App | Port | Public URL | Layout |
-|---|---|---|---|
-| 🧠 BrAIn | 8511 | `https://ai.brenk.com/` (permanent) | featured, full width |
-| 📚 KI-WissensWiki | 8520 | `/tmp/wiki-app-url.txt` (rotates) | grid |
-| 🔎 KI-Zusammenfassung | 8530 | `/tmp/summarizer-app-url.txt` (rotates) | grid |
+All three sit behind the nginx proxy, so all three have permanent URLs. The
+orchestrator itself is what `https://ai.brenk.com/` serves.
+
+| App | Port | Public URL | `baseUrlPath` | Layout |
+|---|---|---|---|---|
+| 🧠 BrAIn | 8511 | `https://ai.brenk.com/brain/` | `brain` | featured, full width |
+| 📚 KI-WissensWiki | 8520 | `https://ai.brenk.com/wiwi/` | `wiwi` | grid |
+| 🔎 KI-Zusammenfassung | 8530 | `https://ai.brenk.com/smrz/` | `smrz` | grid |
 
 `featured = true` lifts an app out of the grid into a full-width card above the
 divider. The split is data-driven; `app.py` names no app.
