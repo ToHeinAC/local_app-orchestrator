@@ -16,8 +16,8 @@ being up on the developer's machine.
 
 | File | Tests | Covers |
 |---|---|---|
-| `test_registry.py` | 17 | `apps.toml` parsing: every field, `url_file` → `Path`, `featured` (default, non-boolean rejected), empty registry, and the rejections — missing required field (parametrized ×4), invalid port (parametrized ×3), duplicate ports, unknown field, malformed TOML, missing file. Plus: **the shipped `apps.toml` parses**. |
-| `test_app.py` | 12 | The page through `streamlit.testing.v1.AppTest`, incl. the featured card rendering ahead of the grid. |
+| `test_registry.py` | 17 | `apps.toml` parsing: every field, `url_file` → `Path`, `section` (default, non-string rejected), empty registry, and the rejections — missing required field (parametrized ×4), invalid port (parametrized ×3), duplicate ports, unknown field, malformed TOML, missing file. Plus: **the shipped `apps.toml` parses**. |
+| `test_app.py` | 12 | The page through `streamlit.testing.v1.AppTest`, incl. apps grouped into section panels in registry order. |
 | `test_status.py` | 10 | URL precedence (`url_file` > `url` > `host:port`), the `APP_HOST` fallback, and the three ways a `url_file` is ignored (missing, empty, garbage). Liveness against a real open/closed port. |
 | `test_theme.py` | 8 | `<style>` block shape, every palette colour applied, both fonts imported, the Material-icon ligature guard, white primary label, `pointer-events: none` on a disabled button, equal card heights, custom palette override. |
 | `test_config.py` | 3 | Defaults, env overrides, and that the default registry path is absolute (Streamlit's cwd is not guaranteed). |

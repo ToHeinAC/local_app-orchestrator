@@ -107,17 +107,20 @@ def test_an_empty_registry_explains_itself(registry):
     assert not _links(at)
 
 
-def test_featured_app_is_rendered_first(registry, open_port, closed_port):
-    # The featured card sits above the grid, so it must come first in the tree —
-    # even though it is declared last in the registry.
+def test_apps_are_grouped_into_sections_in_registry_order(registry, open_port, closed_port):
+    # Sections appear in order of first use; apps keep their registry order inside one.
     registry.write_text(
-        f'[[apps]]\nname="Grid"\nhint="h"\nicon="📚"\nport={closed_port}\n'
-        f'[[apps]]\nname="Featured"\nhint="h"\nicon="🧠"\nport={open_port}\n'
-        f'url="https://brain.example.com/"\nfeatured=true\n',
+        f'[[apps]]\nname="A"\nhint="h"\nicon="📚"\nport={open_port}\nsection="Oben"\n'
+        f'[[apps]]\nname="B"\nhint="h"\nicon="🔎"\nport={closed_port}\nsection="Unten"\n'
+        f'url="https://b.example.com/"\n'
+        f'[[apps]]\nname="C"\nhint="h"\nicon="🧠"\nport={open_port + 1}\nsection="Oben"\n',
         encoding="utf-8",
     )
     at = AppTest.from_file(APP_FILE).run()
-    assert _links(at)[0].url == "https://brain.example.com/"
+    headings = [m.value for m in at.markdown if m.value.startswith("## ")]
+    assert headings == ["## Oben", "## Unten"]
+    names = [m.value for m in at.markdown if m.value.startswith("### ")]
+    assert names == ["### 📚 A", "### 🧠 C", "### 🔎 B"]
 
 
 def test_refresh_reruns_without_error(at):

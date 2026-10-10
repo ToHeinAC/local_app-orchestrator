@@ -82,17 +82,18 @@ palette colour is actually applied, which caught the dead key.
 
 ## Registered apps
 
-All three sit behind the nginx proxy, so all three have permanent URLs. The
+All four sit behind the nginx proxy, so all four have permanent URLs. The
 orchestrator itself is what `https://ai.brenk.com/` serves.
 
-| App | Port | Public URL | `baseUrlPath` | Layout |
+| App | Port | Public URL | `baseUrlPath` | Panel (`section`) |
 |---|---|---|---|---|
-| 🧠 BrAIn | 8511 | `https://ai.brenk.com/brain/` | `brain` | featured, full width |
-| 📚 KI-WissensWiki | 8520 | `https://ai.brenk.com/wiwi/` | `wiwi` | grid |
-| 🔎 KI-Zusammenfassung | 8530 | `https://ai.brenk.com/smrz/` | `smrz` | grid |
+| 📚 KI-WissensWiki | 8520 | `https://ai.brenk.com/wiwi/` | `wiwi` | Wissensmanagement, left |
+| 🧠 BrAIn | 8511 | `https://ai.brenk.com/brain/` | `brain` | Wissensmanagement, right |
+| 🔎 KI-Zusammenfassung | 8530 | `https://ai.brenk.com/smrz/` | `smrz` | Services, left |
+| 🌐 KI-Übersetzer | 8560 | `https://ai.brenk.com/trns/` | `trns` | Services, right |
 
-`featured = true` lifts an app out of the grid into a full-width card above the
-divider. The split is data-driven; `app.py` names no app.
+Each `section` is one bordered panel with a two-column grid, stacked in order of
+first use. The split is data-driven; `app.py` names no app.
 
 ## Tests
 

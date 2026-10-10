@@ -53,6 +53,14 @@ def _grid(apps: list) -> None:
                 _card(app)
 
 
+def _sections(apps: list) -> dict[str, list]:
+    """Group apps by their section, in order of first use; registry order within one."""
+    groups: dict[str, list] = {}
+    for app in apps:
+        groups.setdefault(app.section, []).append(app)
+    return groups
+
+
 def main() -> None:
     st.set_page_config(
         page_title=TITLE,
@@ -76,17 +84,12 @@ def main() -> None:
         st.info(EMPTY)
         return
 
-    # Featured apps get a full-width card of their own, above the grid.
-    featured = [a for a in apps if a.featured]
-    for app in featured:
-        st.markdown("---")
-        _card(app)
-
-    st.markdown("---")
-    rest = [a for a in apps if not a.featured]
-    if rest:
-        _grid(rest)
-        st.markdown("---")
+    # One bordered panel per section, stacked; the cards inside form a two-column grid.
+    for title, group in _sections(apps).items():
+        with st.container(border=True):
+            if title:
+                st.markdown(f"## {title}")
+            _grid(group)
     # Status is probed per page load; this just forces a fresh one.
     if st.button(REFRESH, key="refresh_btn"):
         st.rerun()

@@ -14,8 +14,9 @@
 #             For an app behind a rotating Cloudflare quick tunnel, whose
 #             tunnel.sh writes the fresh URL here. Apps served by the nginx
 #             reverse proxy have a permanent `url` and need no url_file.
-#   featured  (optional) true = full-width card above the divider, ahead of the
-#             two-column grid. For the entry point you want people to land on.
+#   section   (optional) panel heading. Apps with the same section share one
+#             bordered panel with a two-column grid; panels appear in the order
+#             their section is first used. No section = a panel without heading.
 #
 # Resolution order for the Open button: url_file -> url -> http://<host>:<port>
 #
@@ -25,19 +26,20 @@
 # links resolve inside the app's own path instead of at the site root.
 
 [[apps]]
-name     = "BrAIn"
-hint     = "Brenk AI network - Tiefe Recherche"
-icon     = "🧠"
-port     = 8511
-url      = "https://ai.brenk.com/brain/"
-featured = true
-
-[[apps]]
 name     = "KI-WissensWiki"
 hint     = "Lokales KI-Wissensmanagement zur gemeinsamen und/oder individuellen Wissensoptimierung und Recherche"
 icon     = "📚"
 port     = 8520
 url      = "https://ai.brenk.com/wiwi/"
+section  = "Wissensmanagement"
+
+[[apps]]
+name     = "BrAIn"
+hint     = "Brenk AI network - Tiefe Recherche"
+icon     = "🧠"
+port     = 8511
+url      = "https://ai.brenk.com/brain/"
+section  = "Wissensmanagement"
 
 [[apps]]
 name     = "KI-Zusammenfassung"
@@ -45,6 +47,15 @@ hint     = "Lokales KI-Zusammenfassungstool zur Ressourcenoptimierung"
 icon     = "🔎"
 port     = 8530
 url      = "https://ai.brenk.com/smrz/"
+section  = "Services"
+
+[[apps]]
+name     = "KI-Übersetzer"
+hint     = "Lokale KI-Übersetzung von Dokumenten mit Fachglossar"
+icon     = "🌐"
+port     = 8560
+url      = "https://ai.brenk.com/trns/"
+section  = "Services"
 
 # Template — copy, uncomment, fill in. Give the app a path in the nginx config
 # and set the app's own baseUrlPath to match (docs/reverse-proxy.md); the two

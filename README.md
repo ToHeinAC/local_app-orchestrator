@@ -64,6 +64,7 @@ An nginx reverse proxy on **`ai.brenk.com`** provides them — the orchestrator 
 | `https://ai.brenk.com/brain/` | BrAIn (8511) |
 | `https://ai.brenk.com/wiwi/` | KI-WissensWiki (8520) |
 | `https://ai.brenk.com/smrz/` | KI-Zusammenfassung (8530) |
+| `https://ai.brenk.com/trns/` | KI-Übersetzer (8560) |
 
 Each app carries a `baseUrlPath` matching its path, and nginx and the app must
 agree or the app renders blank. The config to install and the reasoning behind it
@@ -75,7 +76,7 @@ The orchestrator picks an app's URL in this order:
 1. `url_file` — a file holding the app's current public URL, re-read on every
    page load. For an app on a Cloudflare quick tunnel, whose URL rotates on
    restart. Unused now that the apps are behind the proxy.
-2. `url` — a static public URL. What all three apps use.
+2. `url` — a static public URL. What all four apps use.
 3. `http://<APP_HOST>:<port>` — the fallback. The card says "nur im lokalen
    Netzwerk erreichbar", because it is.
 

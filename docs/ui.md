@@ -59,16 +59,19 @@ shell from the TOML before Python runs. **Keep the two in sync.**
 KI-Anwendungen                      <- title
 Lokale BRENK-KI-Werkzeuge …         <- subtitle caption
 --------------------------------
-[ 🧠 BrAIn — full-width card    ]   <- featured apps (registry: featured = true)
---------------------------------
-[ 📚 Wiki      ] [ 🔎 Summary   ]   <- two-column grid, the rest
---------------------------------
++-- Wissensmanagement -------------+   <- one panel per registry `section`
+| [ 📚 Wiki ]    [ 🧠 BrAIn ]      |   <- two-column grid inside the panel
++----------------------------------+
++-- Services ----------------------+
+| [ 🔎 Summary ] [ 🌐 Übersetzer ] |
++----------------------------------+
 [ Status aktualisieren ]
 ```
 
-Apps flagged `featured` in the registry get a **full-width card above the
-divider**; everything else falls into a **two-column grid** (`COLUMNS` in
-`app.py`). The split is data-driven — `app.py` names no app.
+Each registry `section` becomes one **bordered panel** with a heading and a
+**two-column grid** (`COLUMNS` in `app.py`); panels stack in the order their
+section is first used, cards in registry order. The split is data-driven —
+`app.py` names no app. An app without a section gets a panel without heading.
 
 Each card is an `st.container(border=True)`:
 
@@ -79,7 +82,7 @@ lokales KI-Wissensmanagement-Wiki   <- hint (caption, muted)
 [        Öffnen ↗        ]           <- link_button, primary, full width
 ```
 
-Below the grid, a divider and a **Status aktualisieren** button that just reruns
+Below the panels, a **Status aktualisieren** button that just reruns
 the page (status is probed fresh on every load anyway).
 
 **Cards in a row are equal height.** Hints differ in length and wrap to different

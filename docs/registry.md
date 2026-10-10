@@ -15,7 +15,7 @@ One `[[apps]]` block per app.
 | `port` | yes | Port the app listens on, on this server. 1–65535, unique across the registry. |
 | `url` | no | Public URL. For an app behind the nginx proxy: `https://ai.brenk.com/<path>/`, trailing slash included. |
 | `url_file` | no | File holding the app's *current* public URL. Wins over `url`. For an app on a rotating quick tunnel instead of the proxy. |
-| `featured` | no | `true` → a full-width card above the divider, ahead of the grid. Default `false`. For the entry point people should land on. |
+| `section` | no | Panel heading. Apps with the same section share one bordered panel with a two-column grid; panels appear in the order their section is first used, apps in registry order within a panel. Default `""` = a panel without heading. |
 
 Unknown fields are rejected, so a typo like `urlfile =` fails loudly instead of
 being silently ignored.
@@ -52,6 +52,7 @@ proxy at one path per app:
 | BrAIn (8511) | `https://ai.brenk.com/brain/` |
 | KI-WissensWiki (8520) | `https://ai.brenk.com/wiwi/` |
 | KI-Zusammenfassung (8530) | `https://ai.brenk.com/smrz/` |
+| KI-Übersetzer (8560) | `https://ai.brenk.com/trns/` |
 
 The **trailing slash is required**, not cosmetic: Streamlit's asset links are
 relative, and without the slash they resolve at the site root and the app renders

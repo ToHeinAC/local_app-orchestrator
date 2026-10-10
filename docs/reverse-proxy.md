@@ -15,10 +15,10 @@ browser --https--> ai.brenk.com (37.24.163.90)
                         |
                    nginx 172.16.4.11:444   <- SSL termination, path routing
                         |
-        +---------------+---------------+---------------+
-        |               |               |               |
-   /  -> :8550     /brain/ -> :8511  /wiwi/ -> :8520  /smrz/ -> :8530
-   orchestrator    BrAIn             WissensWiki      Zusammenfassung
+        +---------------+---------------+---------------+---------------+
+        |               |               |               |               |
+   /  -> :8550     /brain/ -> :8511  /wiwi/ -> :8520  /smrz/ -> :8530  /trns/ -> :8560
+   orchestrator    BrAIn             WissensWiki      Zusammenfassung  Übersetzer
 ```
 
 nginx is reachable at `172.16.4.11` port **222** (SSH); the login is Horst's. The
